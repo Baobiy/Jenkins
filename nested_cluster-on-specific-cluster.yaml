@@ -1,0 +1,217 @@
+# name of each item should be unique in this config file
+# and item will be skiped if its name is None when loading config file to database
+
+jira_issues:
+    -   # unique name of jira issue in this config file
+        name:
+        # server name or ip of jira system, use db default value if it is None
+        server:
+        # user name of jira system
+        user:
+        # password of jira system
+        password:
+        # jira project name of this issue
+        project:
+        # epic name of this issue
+        epic_name:
+        # epic key of this issue
+        epic_key:
+        # type of this issue
+        issue_kind:
+        # key of this issue
+        issue_key:
+        # name of this issue
+        issue_name:
+
+testrail_runs:
+    -   # unique name of testrail run in this config file
+        name:
+        # server name or ip of testrail system
+        server:
+        # user name of testrail system
+        user:
+        # password of testrail system
+        password:
+        # run id of testrail system
+        run_id:
+
+repos:
+    -   # unique name of repository in this config file
+        name:
+        # repository type, default is git
+        kind:
+        # repository url
+        url:
+        # repository branch
+        branch:
+        # jenkins credentials_id of this repository
+        credentials_id:
+
+clusters:
+    -   # unique name of cluster in this config file
+        name:
+        # cluster type, only ELF and VMware are supported now
+        kind:
+        # IP list of SMTX cluster including smartx cluster ip and vcenter ip
+        servers:
+        # user of SMTX cluster webconsole
+        elfapi_user:
+        # password of SMTX cluster webconsole
+        elfapi_password:
+        # ssh user of SMTX cluster node
+        ssh_user:
+        # ssh password of SMTX cluster node
+        ssh_password:
+        # ssh and soap user of vsphere server
+        esxi_user:
+        # ssh and soap password of vsphere server
+        esxi_password:
+        # ipmi user of cluster node
+        ipmi_user:
+        # ipmi password of cluster node
+        ipmi_password:
+        # user name of vcenter server
+        vcenter_user:
+        # password of vcenter server
+        vcenter_password:
+        # datacenter name of this cluster on vcenter server
+        vcenter_datacenter:
+        # cluster name in this config file which is host cluster of this nested cluster
+        host_cluster:
+        # name of this cluster
+        cluster_name:
+        # whether collect cluster info before running test
+        collect_info:
+        # whether upgrade this cluster before running test
+        upgrade:
+        # whether create this nested cluster before running test
+        create:
+        # following parameters are only used when creating nested cluster
+        # path of SmartxOS installation iso
+        smartxos_iso:
+        # path of vsphere installation iso
+        esxi_iso:
+        # number of cluster nodes
+        node_num:
+        # cpu number of each nested node
+        cpu_num:
+        # memory size of each nested node
+        memory_size:
+        # ssd cache disk size of each nested node
+        cache_disk_size:
+        # hdd data disk size of each nested node
+        data_disk_size:
+        # cpu number of each nested vsphere node
+        esxi_cpu_num:
+        # memory size of each nested vpshere node
+        esxi_memory_size:
+        # total disk size of each nested vsphere node
+        esxi_sata_dom_size:
+
+    -   name: nestedcluster
+        type: {{ cluster_type|default('ELF', false)|help_str('Type of created nested cluster') }}
+        cluster_name: {{ nested_cluster_name|default('nestedcluster', false)|help_str('Name of created nested cluster') }}
+        servers:
+            -   need_create
+        elfapi_user: root
+        elfapi_password: "111111"
+        ssh_user: smtxauto
+        ssh_password: abc123
+        esxi_user: root
+        esxi_password: abcd1234
+        ipmi_user:
+        ipmi_password:
+        vcenter_user: "vsphere.local\\Administrator"
+        vcenter_password: "!QAZ2wsx"
+        vcenter_datacenter: QE-DOGFOOD
+        upgrade: false
+        create: true
+        host_cluster: hostcluster
+        collect_info: false
+        smartxos_iso:
+        smartxos_image:
+        esxi_iso:
+        esxi_image:
+        node_num: {{ node_num|default(3, false)|help_str('Number of nodes of created nested cluster') }}
+        cpu_num: {{ cpu_num|default(8, false)|help_str('CPUNumber of nodes of created nested cluster') }}
+        memory_size: {{ memory_size|default('16G', false)|help_str('Memory size per node of created nested cluster') }}
+        cache_disk_size: 150G
+        data_disk_size: 100G
+        esxi_cpu_num: {{ esxi_cpu_num|default(8, false)|help_str('ESXICPUNumber of nodes of created nested cluster') }}
+        esxi_memory_size: {{ esxi_memory_size|default('20G', false)|help_str('ESXi memory size per node of created nested cluster') }}
+        esxi_sata_dom_size: 500G
+
+    -   name: hostcluster
+        type: {{ hostcluster_type|default('VMware', false)|help_str('Type of host cluster') }}
+        servers:
+            -   {{ hostcluster_server|default('', false)|help_str('IP of host cluster') }}
+            -   {{ hostcluster_vcenter_server|default('', false)|help_str('Vcenter IP of host cluster, keep empty if it is a ELF cluster') }}
+        elfapi_user: {{ hostcluster_fisheye_user|default('root', false)|help_str('Fisheye user of node in host cluster') }}
+        elfapi_password: "{{ hostcluster_fisheye_password|default('111111', false)|help_str('Fisheye password of node in host cluster') }}"
+        ssh_user: {{ hostcluster_ssh_user|default('smtxauto', false)|help_str('SSH user of node in host cluster') }}
+        ssh_password: {{ hostcluster_ssh_password|default('HC!r0cks', false)|help_str('SSH password of node in host cluster') }}
+        esxi_user: {{ hostcluster_esxi_user|default('root', false)|help_str('SSH user of ESXi node in host cluster') }}
+        esxi_password: "{{ hostcluster_esxi_password|default('abcd1234', false)|help_str('SSH password of ESXi node in host cluster') }}"
+        ipmi_user:
+        ipmi_password:
+        vcenter_user: "{{ hostcluster_vcenter_user|default('vsphere.local\\\\Administrator', false)|help_str('Vcenter user of host cluster') }}"
+        vcenter_password: "{{ hostcluster_vcenter_password|default('!QAZ2wsx', false)|help_str('Vcenter password of host cluster') }}"
+        vcenter_datacenter: {{ hostcluster_vcenter_datacenter|default('QE-DOGFOOD', false)|help_str('Vcenter datacenter of host cluster') }}
+        upgrade: false
+        collect_info: false
+
+connections:
+    -   # unique name of cluster in this config file
+        name:
+        # connection type
+        kind:
+        # group names of this connection
+        groups:
+        # ip address of this connection
+        ip:
+        # port used by this connection
+        port:
+        # user name of this connection
+        user:
+        # password of this connection
+        password:
+        # vcenter datacenter name of this connection
+        datacenter:
+        # alternative ip addresses of this connection
+        candidate_ips:
+        # token used by this connection
+        token:
+        # name of virtual machine if the connection is on VM
+        vm_name:
+        # name of smtartx cluster of this connection
+        cluster_name:
+
+testruns:
+    -   # unique name of testrun in this config file
+        name:
+        # type of the testrun
+        kind:
+        # command used to execute this testrun
+        command:
+        # input robot variables
+        variablefile:
+        # connection names in this config file used by this testrun
+        connections:
+        # cluster names in this config file used by this testrun
+        clusters:
+        # cluster names in this config file locked by this testrun
+        lock_clusters:
+        # plugin module names or paths used by this testrun
+        modules:
+        # list of robot testsuite path executed in this testrun
+        data_sources:
+        # select robot testcases by tags
+        include:
+        # deselect robot testcases by tags
+        exclude:
+        # output directory of robot test report
+        outputdir:
+        # testrail run names in this config used by this testrun
+        testrail_runs:
+        # jira issue names in this config used by this testrun
+        jira_issues:
